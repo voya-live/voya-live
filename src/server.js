@@ -109,7 +109,9 @@ io.on("connection", (socket) => {
 
   socket.emit("rooms:update", liveRooms);
 
-  socket.on("room:join", ({ roomId, user }) => {
+  socket.on("room:join", ({ roomId, user, agoraUid }) => {
+    if (!roomId || !user) return;
+
     if (!liveRooms[roomId]) {
       liveRooms[roomId] = {
         users: [],
@@ -125,7 +127,11 @@ io.on("connection", (socket) => {
         id: user.id,
         name: user.name,
         socketId: socket.id,
+        agoraUid: Number(agoraUid),
       });
+    } else {
+      alreadyJoined.socketId = socket.id;
+      alreadyJoined.agoraUid = Number(agoraUid);
     }
 
     socket.join(roomId);

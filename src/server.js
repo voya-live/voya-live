@@ -22,14 +22,21 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-    ],
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://voya-live-frontend.onrender.com",
+],
     methods: ["GET", "POST"],
   },
 });
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://voya-live-frontend.onrender.com",
+  ],
+}));
 
 app.use(express.json());
 

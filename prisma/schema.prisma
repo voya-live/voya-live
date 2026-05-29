@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String   @unique
+  passwordHash String
+  role         String   @default("user")
+  coins        Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  title     String
+  hostId    String
+  status    String   @default("live")
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  coins     Int
+  amountSar Float?
+  status    String
+  createdAt DateTime @default(now())
+}

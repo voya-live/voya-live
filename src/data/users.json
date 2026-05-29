@@ -1,0 +1,328 @@
+[
+  {
+    "id": "1779983443916",
+    "name": "mmm",
+    "phone": "0556095611",
+    "role": "user",
+    "coins": 120,
+    "level": 1,
+    "passwordHash": "$2a$10$i/q7Teb8EIGBa/ol/2.nReQ..UOClwhK0N5POzCGEpAkUOPUBiwy2",
+    "createdAt": "2026-05-28T15:50:43.916Z"
+  },
+  {
+    "id": "1779983512488",
+    "name": "sss",
+    "phone": "0556095618",
+    "role": "user",
+    "coins": 120,
+    "level": 1,
+    "passwordHash": "$2a$10$MngFjwNZKOv/gSxF1Ki.gef7rUHxhJoRVrOtn4tpkVVL0BpGHPMJi",
+    "createdAt": "2026-05-28T15:51:52.488Z"
+  },
+  {
+    "id": "1779984206501",
+    "name": "sss",
+    "phone": "0566095618",
+    "role": "user",
+    "coins": 120,
+    "level": 1,
+    "passwordHash": "$2a$10$bRdO2kCOVQAD.q3fzZebgueplh3sJE5wOTm4IB3GAkcDBLnRtSd2.",
+    "createdAt": "2026-05-28T16:03:26.501Z"
+  },
+  {
+    "id": "1779984390112",
+    "name": "Moh",
+    "phone": "0566095611",
+    "role": "user",
+    "coins": 80,
+    "level": 1,
+    "passwordHash": "$2a$10$qHNLqrJbgPn5mreB7MfVYOIA2YYVfr2/evpmJJicNRyjSGUjy8Ut6",
+    "createdAt": "2026-05-28T16:06:30.112Z",
+    "transactions": [
+      {
+        "id": 1779999242671,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:14:02.671Z"
+      },
+      {
+        "id": 1779999241086,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:14:01.086Z"
+      },
+      {
+        "id": 1779999240503,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:14:00.503Z"
+      },
+      {
+        "id": 1779999239835,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.835Z"
+      },
+      {
+        "id": 1779999239669,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.669Z"
+      },
+      {
+        "id": 1779999239501,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.501Z"
+      },
+      {
+        "id": 1779999239316,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.316Z"
+      },
+      {
+        "id": 1779999239167,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.167Z"
+      },
+      {
+        "id": 1779999239005,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:59.005Z"
+      },
+      {
+        "id": 1779999238835,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:58.835Z"
+      },
+      {
+        "id": 1779999238682,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:58.682Z"
+      },
+      {
+        "id": 1779999238488,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:58.488Z"
+      },
+      {
+        "id": 1779999238084,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:58.084Z"
+      },
+      {
+        "id": 1779999237884,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:57.884Z"
+      },
+      {
+        "id": 1779999237717,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:57.717Z"
+      },
+      {
+        "id": 1779999237535,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:57.535Z"
+      },
+      {
+        "id": 1779999237360,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:57.360Z"
+      },
+      {
+        "id": 1779999237185,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:57.185Z"
+      },
+      {
+        "id": 1779999236967,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:56.967Z"
+      },
+      {
+        "id": 1779999234967,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:54.967Z"
+      },
+      {
+        "id": 1779999234770,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:54.770Z"
+      },
+      {
+        "id": 1779999234586,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:54.586Z"
+      },
+      {
+        "id": 1779999234384,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:54.384Z"
+      },
+      {
+        "id": 1779999234154,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:54.154Z"
+      },
+      {
+        "id": 1779999233555,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:53.555Z"
+      },
+      {
+        "id": 1779999230652,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:50.652Z"
+      },
+      {
+        "id": 1779999230356,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:50.356Z"
+      },
+      {
+        "id": 1779999230049,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:50.049Z"
+      },
+      {
+        "id": 1779999229465,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:49.465Z"
+      },
+      {
+        "id": 1779999224318,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:44.318Z"
+      },
+      {
+        "id": 1779999224116,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:44.116Z"
+      },
+      {
+        "id": 1779999223401,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:43.401Z"
+      },
+      {
+        "id": 1779999223220,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:43.220Z"
+      },
+      {
+        "id": 1779999223018,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:43.018Z"
+      },
+      {
+        "id": 1779999222771,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:42.771Z"
+      },
+      {
+        "id": 1779999222385,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:42.385Z"
+      },
+      {
+        "id": 1779999221756,
+        "type": "gift",
+        "amount": -20,
+        "createdAt": "2026-05-28T20:13:41.756Z"
+      },
+      {
+        "id": 1779999196650,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:16.650Z"
+      },
+      {
+        "id": 1779999196484,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:16.484Z"
+      },
+      {
+        "id": 1779999196318,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:16.318Z"
+      },
+      {
+        "id": 1779999196151,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:16.151Z"
+      },
+      {
+        "id": 1779999195935,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:15.935Z"
+      },
+      {
+        "id": 1779999195586,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:15.586Z"
+      },
+      {
+        "id": 1779999194431,
+        "type": "recharge",
+        "amount": 100,
+        "createdAt": "2026-05-28T20:13:14.431Z"
+      }
+    ]
+  },
+  {
+    "id": "1779984595699",
+    "name": "qqq",
+    "phone": "0566095619",
+    "role": "user",
+    "coins": 120,
+    "level": 1,
+    "passwordHash": "$2a$10$Ptuw893kTAvrA9IaExvAZe9LN0ahCUg7Yp2bNPPOeBpzdWIDyucG6",
+    "createdAt": "2026-05-28T16:09:55.699Z"
+  },
+  {
+    "id": "1779989020860",
+    "name": "iman",
+    "phone": "0566095610",
+    "role": "user",
+    "coins": 120,
+    "level": 1,
+    "passwordHash": "$2a$10$su/XYjh8hXy3I90sfNHfge/FCpsMueaKRD7ySDxGn5vFyE9NKYCku",
+    "createdAt": "2026-05-28T17:23:40.860Z"
+  }
+]

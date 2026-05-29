@@ -3,7 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
-import { RtcTokenBuilder, RtcRole } from "agora-access-token";
+import agoraAccessToken from "agora-access-token";
+
+const { RtcTokenBuilder, RtcRole } = agoraAccessToken;
 
 import { connectDb } from "./config/db.js";
 

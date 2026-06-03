@@ -128,10 +128,12 @@ io.on("connection", (socket) => {
         name: user.name,
         socketId: socket.id,
         agoraUid: Number(agoraUid),
+        isHost: user.isHost || false,
       });
     } else {
       alreadyJoined.socketId = socket.id;
       alreadyJoined.agoraUid = Number(agoraUid);
+      alreadyJoined.isHost = user.isHost || false;
     }
 
     socket.join(roomId);

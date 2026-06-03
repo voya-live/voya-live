@@ -103,6 +103,7 @@ app.use("/api/wallet", walletRoutes);
 app.use("/api/admin", adminRoutes);
 
 const liveRooms = {};
+const handRequests = {};
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -144,6 +145,11 @@ io.on("connection", (socket) => {
       type: "system",
       text: `${user.name} joined the room`,
     });
+
+    io.to(roomId).emit(
+      "room:handRequests",
+      handRequests[roomId] || []
+    );
   });
 
   socket.on("room:chat", ({ roomId, user, message }) => {
@@ -166,6 +172,45 @@ io.on("connection", (socket) => {
 
     socket.leave(roomId);
     io.emit("rooms:update", liveRooms);
+  });
+
+  socket.on("room:raiseHand", ({ roomId, user }) => {
+    if (!roomId || !user) return;
+
+    if (!handRequests[roomId]) {
+      handRequests[roomId] = [];
+    }
+
+    const alreadyExists = handRequests[roomId].find(
+      (item) => item.id === user.id
+    );
+
+    if (!alreadyExists) {
+      handRequests[roomId].push({
+        id: user.id,
+        name: user.name,
+      });
+    }
+
+    io.to(roomId).emit(
+      "room:handRequests",
+      handRequests[roomId]
+    );
+  });
+
+  socket.on("room:clearHand", ({ roomId, userId }) => {
+    if (!roomId || !userId) return;
+
+    if (handRequests[roomId]) {
+      handRequests[roomId] = handRequests[roomId].filter(
+        (item) => item.id !== userId
+      );
+    }
+
+    io.to(roomId).emit(
+      "room:handRequests",
+      handRequests[roomId] || []
+    );
   });
 
   socket.on("disconnect", () => {

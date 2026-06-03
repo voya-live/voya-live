@@ -21,6 +21,8 @@ connectDb();
 const app = express();
 const server = http.createServer(app);
 
+const MAX_SPEAKERS = 8;
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
@@ -109,6 +111,12 @@ const roomSpeakers = {};
 function emitRoomState(roomId) {
   io.to(roomId).emit("room:handRequests", handRequests[roomId] || []);
   io.to(roomId).emit("room:speakersUpdate", roomSpeakers[roomId] || []);
+}
+
+function getNonHostSpeakerCount(roomId) {
+  return (roomSpeakers[roomId] || []).filter(
+    (item) => !item.isHost
+  ).length;
 }
 
 io.on("connection", (socket) => {
@@ -260,15 +268,23 @@ io.on("connection", (socket) => {
       (item) => item.id === userId
     );
 
-    if (!alreadySpeaker) {
-      roomSpeakers[roomId].push({
-        id: targetUser.id,
-        name: targetUser.name,
-        agoraUid: targetUser.agoraUid,
-        isHost: targetUser.isHost || false,
-        muted: false,
+    if (alreadySpeaker) return;
+
+    if (getNonHostSpeakerCount(roomId) >= MAX_SPEAKERS) {
+      socket.emit("room:error", {
+        message: "Stage is full. Maximum 8 speakers allowed.",
       });
+
+      return;
     }
+
+    roomSpeakers[roomId].push({
+      id: targetUser.id,
+      name: targetUser.name,
+      agoraUid: targetUser.agoraUid,
+      isHost: targetUser.isHost || false,
+      muted: false,
+    });
 
     if (handRequests[roomId]) {
       handRequests[roomId] = handRequests[roomId].filter(

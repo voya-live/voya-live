@@ -1,0 +1,152 @@
+import express from "express";
+import mongoose from "mongoose";
+
+import User from "../models/User.js";
+import { authMiddleware } from "../middleware/auth.js";
+
+const router = express.Router();
+
+/*
+FOLLOW USER
+*/
+
+router.post(
+  "/follow/:userId",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const currentUser = req.user;
+      const targetUser = await User.findById(
+        req.params.userId
+      );
+
+      if (!targetUser) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      if (
+        currentUser._id.toString() ===
+        targetUser._id.toString()
+      ) {
+        return res.status(400).json({
+          error: "Cannot follow yourself",
+        });
+      }
+
+      const alreadyFollowing =
+        currentUser.following.some(
+          (id) =>
+            id.toString() ===
+            targetUser._id.toString()
+        );
+
+      if (!alreadyFollowing) {
+        currentUser.following.push(
+          targetUser._id
+        );
+
+        targetUser.followers.push(
+          currentUser._id
+        );
+
+        await currentUser.save();
+        await targetUser.save();
+      }
+
+      res.json({
+        success: true,
+      });
+    } catch {
+      res.status(500).json({
+        error: "Follow failed",
+      });
+    }
+  }
+);
+
+/*
+UNFOLLOW USER
+*/
+
+router.post(
+  "/unfollow/:userId",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const currentUser = req.user;
+      const targetUser = await User.findById(
+        req.params.userId
+      );
+
+      if (!targetUser) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      currentUser.following =
+        currentUser.following.filter(
+          (id) =>
+            id.toString() !==
+            targetUser._id.toString()
+        );
+
+      targetUser.followers =
+        targetUser.followers.filter(
+          (id) =>
+            id.toString() !==
+            currentUser._id.toString()
+        );
+
+      await currentUser.save();
+      await targetUser.save();
+
+      res.json({
+        success: true,
+      });
+    } catch {
+      res.status(500).json({
+        error: "Unfollow failed",
+      });
+    }
+  }
+);
+
+/*
+PROFILE
+*/
+
+router.get(
+  "/profile/:userId",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const user = await User.findById(
+        req.params.userId
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      res.json({
+        id: user._id,
+        name: user.name,
+        level: user.level,
+        coins: user.coins,
+        followers: user.followers.length,
+        following: user.following.length,
+      });
+    } catch {
+      res.status(500).json({
+        error: "Profile error",
+      });
+    }
+  }
+);
+
+export default router;

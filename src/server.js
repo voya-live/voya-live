@@ -13,6 +13,7 @@ import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/rooms.js";
 import walletRoutes from "./routes/wallet.js";
 import adminRoutes from "./routes/admin.js";
+import userRoutes from "./routes/users.js";
 
 dotenv.config();
 
@@ -103,6 +104,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/users", userRoutes);
 
 const liveRooms = {};
 const handRequests = {};

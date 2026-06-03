@@ -200,6 +200,20 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("room:gift", ({ roomId, user, gift }) => {
+    if (!roomId || !user || !gift) return;
+
+    io.to(roomId).emit("room:gift", {
+      id: Date.now(),
+      user: user.name,
+      giftName: gift.name,
+      giftIcon: gift.icon,
+      amount: gift.amount,
+      text: `${user.name} sent ${gift.icon} ${gift.name}`,
+      time: new Date().toLocaleTimeString(),
+    });
+  });
+
   socket.on("room:leave", ({ roomId, user }) => {
     if (liveRooms[roomId]) {
       liveRooms[roomId].users = liveRooms[roomId].users.filter(

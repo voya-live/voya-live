@@ -164,6 +164,7 @@ io.on("connection", (socket) => {
           name: user.name,
           agoraUid: Number(agoraUid),
           isHost: true,
+          muted: false,
         });
       }
     }
@@ -265,6 +266,7 @@ io.on("connection", (socket) => {
         name: targetUser.name,
         agoraUid: targetUser.agoraUid,
         isHost: targetUser.isHost || false,
+        muted: false,
       });
     }
 
@@ -285,6 +287,20 @@ io.on("connection", (socket) => {
         (item) => item.id !== userId
       );
     }
+
+    emitRoomState(roomId);
+  });
+
+  socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
+    if (!roomId || !userId) return;
+
+    const speaker = roomSpeakers[roomId]?.find(
+      (item) => item.id === userId
+    );
+
+    if (!speaker) return;
+
+    speaker.muted = Boolean(muted);
 
     emitRoomState(roomId);
   });

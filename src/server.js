@@ -104,6 +104,12 @@ app.use("/api/admin", adminRoutes);
 
 const liveRooms = {};
 const handRequests = {};
+const roomSpeakers = {};
+
+function emitRoomState(roomId) {
+  io.to(roomId).emit("room:handRequests", handRequests[roomId] || []);
+  io.to(roomId).emit("room:speakersUpdate", roomSpeakers[roomId] || []);
+}
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -119,22 +125,47 @@ io.on("connection", (socket) => {
       };
     }
 
+    if (!handRequests[roomId]) {
+      handRequests[roomId] = [];
+    }
+
+    if (!roomSpeakers[roomId]) {
+      roomSpeakers[roomId] = [];
+    }
+
     const alreadyJoined = liveRooms[roomId].users.find(
       (item) => item.id === user.id
     );
 
+    const userData = {
+      id: user.id,
+      name: user.name,
+      socketId: socket.id,
+      agoraUid: Number(agoraUid),
+      isHost: user.isHost || false,
+    };
+
     if (!alreadyJoined) {
-      liveRooms[roomId].users.push({
-        id: user.id,
-        name: user.name,
-        socketId: socket.id,
-        agoraUid: Number(agoraUid),
-        isHost: user.isHost || false,
-      });
+      liveRooms[roomId].users.push(userData);
     } else {
       alreadyJoined.socketId = socket.id;
       alreadyJoined.agoraUid = Number(agoraUid);
       alreadyJoined.isHost = user.isHost || false;
+    }
+
+    if (user.isHost) {
+      const hostAlreadySpeaker = roomSpeakers[roomId].find(
+        (item) => item.id === user.id
+      );
+
+      if (!hostAlreadySpeaker) {
+        roomSpeakers[roomId].push({
+          id: user.id,
+          name: user.name,
+          agoraUid: Number(agoraUid),
+          isHost: true,
+        });
+      }
     }
 
     socket.join(roomId);
@@ -146,10 +177,7 @@ io.on("connection", (socket) => {
       text: `${user.name} joined the room`,
     });
 
-    io.to(roomId).emit(
-      "room:handRequests",
-      handRequests[roomId] || []
-    );
+    emitRoomState(roomId);
   });
 
   socket.on("room:chat", ({ roomId, user, message }) => {
@@ -170,8 +198,21 @@ io.on("connection", (socket) => {
       );
     }
 
+    if (roomSpeakers[roomId]) {
+      roomSpeakers[roomId] = roomSpeakers[roomId].filter(
+        (item) => item.id !== user.id
+      );
+    }
+
+    if (handRequests[roomId]) {
+      handRequests[roomId] = handRequests[roomId].filter(
+        (item) => item.id !== user.id
+      );
+    }
+
     socket.leave(roomId);
     io.emit("rooms:update", liveRooms);
+    emitRoomState(roomId);
   });
 
   socket.on("room:raiseHand", ({ roomId, user }) => {
@@ -180,6 +221,12 @@ io.on("connection", (socket) => {
     if (!handRequests[roomId]) {
       handRequests[roomId] = [];
     }
+
+    const alreadySpeaker = roomSpeakers[roomId]?.find(
+      (item) => item.id === user.id
+    );
+
+    if (alreadySpeaker) return;
 
     const alreadyExists = handRequests[roomId].find(
       (item) => item.id === user.id
@@ -192,10 +239,54 @@ io.on("connection", (socket) => {
       });
     }
 
-    io.to(roomId).emit(
-      "room:handRequests",
-      handRequests[roomId]
+    emitRoomState(roomId);
+  });
+
+  socket.on("room:approveSpeaker", ({ roomId, userId }) => {
+    if (!roomId || !userId) return;
+
+    if (!roomSpeakers[roomId]) {
+      roomSpeakers[roomId] = [];
+    }
+
+    const targetUser = liveRooms[roomId]?.users.find(
+      (item) => item.id === userId
     );
+
+    if (!targetUser) return;
+
+    const alreadySpeaker = roomSpeakers[roomId].find(
+      (item) => item.id === userId
+    );
+
+    if (!alreadySpeaker) {
+      roomSpeakers[roomId].push({
+        id: targetUser.id,
+        name: targetUser.name,
+        agoraUid: targetUser.agoraUid,
+        isHost: targetUser.isHost || false,
+      });
+    }
+
+    if (handRequests[roomId]) {
+      handRequests[roomId] = handRequests[roomId].filter(
+        (item) => item.id !== userId
+      );
+    }
+
+    emitRoomState(roomId);
+  });
+
+  socket.on("room:removeSpeaker", ({ roomId, userId }) => {
+    if (!roomId || !userId) return;
+
+    if (roomSpeakers[roomId]) {
+      roomSpeakers[roomId] = roomSpeakers[roomId].filter(
+        (item) => item.id !== userId
+      );
+    }
+
+    emitRoomState(roomId);
   });
 
   socket.on("room:clearHand", ({ roomId, userId }) => {
@@ -207,17 +298,34 @@ io.on("connection", (socket) => {
       );
     }
 
-    io.to(roomId).emit(
-      "room:handRequests",
-      handRequests[roomId] || []
-    );
+    emitRoomState(roomId);
   });
 
   socket.on("disconnect", () => {
     Object.keys(liveRooms).forEach((roomId) => {
+      const disconnectedUsers = liveRooms[roomId].users.filter(
+        (item) => item.socketId === socket.id
+      );
+
       liveRooms[roomId].users = liveRooms[roomId].users.filter(
         (item) => item.socketId !== socket.id
       );
+
+      disconnectedUsers.forEach((user) => {
+        if (roomSpeakers[roomId]) {
+          roomSpeakers[roomId] = roomSpeakers[roomId].filter(
+            (item) => item.id !== user.id
+          );
+        }
+
+        if (handRequests[roomId]) {
+          handRequests[roomId] = handRequests[roomId].filter(
+            (item) => item.id !== user.id
+          );
+        }
+      });
+
+      emitRoomState(roomId);
     });
 
     io.emit("rooms:update", liveRooms);

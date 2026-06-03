@@ -34,3 +34,4 @@ export async function authMiddleware(req, res, next) {
     });
   }
 }
+export const authRequired = authMiddleware;

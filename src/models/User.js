@@ -50,6 +50,20 @@ const userSchema = new mongoose.Schema(
       default: 1,
     },
 
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     transactions: [transactionSchema],
   },
   {
@@ -57,9 +71,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model(
-  "User",
-  userSchema
-);
+const User = mongoose.model("User", userSchema);
 
 export default User;

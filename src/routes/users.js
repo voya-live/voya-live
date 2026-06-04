@@ -1,10 +1,23 @@
 import express from "express";
-import mongoose from "mongoose";
 
 import User from "../models/User.js";
 import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
+
+async function findUserByIdOrPhone(value) {
+  if (!value) return null;
+
+  const isMongoId = /^[0-9a-fA-F]{24}$/.test(value);
+
+  if (isMongoId) {
+    return User.findById(value);
+  }
+
+  return User.findOne({
+    phone: value,
+  });
+}
 
 /*
 FOLLOW USER
@@ -16,7 +29,7 @@ router.post(
   async (req, res) => {
     try {
       const currentUser = req.user;
-      const targetUser = await User.findById(
+      const targetUser = await findUserByIdOrPhone(
         req.params.userId
       );
 
@@ -58,7 +71,9 @@ router.post(
       res.json({
         success: true,
       });
-    } catch {
+    } catch (error) {
+      console.error("Follow failed:", error);
+
       res.status(500).json({
         error: "Follow failed",
       });
@@ -76,7 +91,7 @@ router.post(
   async (req, res) => {
     try {
       const currentUser = req.user;
-      const targetUser = await User.findById(
+      const targetUser = await findUserByIdOrPhone(
         req.params.userId
       );
 
@@ -106,7 +121,9 @@ router.post(
       res.json({
         success: true,
       });
-    } catch {
+    } catch (error) {
+      console.error("Unfollow failed:", error);
+
       res.status(500).json({
         error: "Unfollow failed",
       });
@@ -123,7 +140,7 @@ router.get(
   authMiddleware,
   async (req, res) => {
     try {
-      const user = await User.findById(
+      const user = await findUserByIdOrPhone(
         req.params.userId
       );
 
@@ -133,15 +150,25 @@ router.get(
         });
       }
 
+      const isFollowing =
+        req.user.following.some(
+          (id) =>
+            id.toString() === user._id.toString()
+        );
+
       res.json({
         id: user._id,
         name: user.name,
+        phone: user.phone,
         level: user.level,
         coins: user.coins,
         followers: user.followers.length,
         following: user.following.length,
+        isFollowing,
       });
-    } catch {
+    } catch (error) {
+      console.error("Profile error:", error);
+
       res.status(500).json({
         error: "Profile error",
       });

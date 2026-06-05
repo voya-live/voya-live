@@ -155,6 +155,9 @@ io.on("connection", (socket) => {
       socketId: socket.id,
       agoraUid: Number(agoraUid),
       isHost: user.isHost || false,
+      level: user.level || 1,
+      experience: user.experience || 0,
+      vipLevel: user.vipLevel || 0,
     };
 
     if (!alreadyJoined) {
@@ -163,6 +166,9 @@ io.on("connection", (socket) => {
       alreadyJoined.socketId = socket.id;
       alreadyJoined.agoraUid = Number(agoraUid);
       alreadyJoined.isHost = user.isHost || false;
+      alreadyJoined.level = user.level || 1;
+      alreadyJoined.experience = user.experience || 0;
+      alreadyJoined.vipLevel = user.vipLevel || 0;
     }
 
     if (user.isHost) {
@@ -177,7 +183,15 @@ io.on("connection", (socket) => {
           agoraUid: Number(agoraUid),
           isHost: true,
           muted: false,
+          level: user.level || 1,
+          experience: user.experience || 0,
+          vipLevel: user.vipLevel || 0,
         });
+      } else {
+        hostAlreadySpeaker.agoraUid = Number(agoraUid);
+        hostAlreadySpeaker.level = user.level || 1;
+        hostAlreadySpeaker.experience = user.experience || 0;
+        hostAlreadySpeaker.vipLevel = user.vipLevel || 0;
       }
     }
 
@@ -302,6 +316,9 @@ io.on("connection", (socket) => {
       agoraUid: targetUser.agoraUid,
       isHost: targetUser.isHost || false,
       muted: false,
+      level: targetUser.level || 1,
+      experience: targetUser.experience || 0,
+      vipLevel: targetUser.vipLevel || 0,
     });
 
     if (handRequests[roomId]) {

@@ -17,6 +17,8 @@ router.get("/balance", authRequired, async (req, res) => {
     res.json({
       coins: user.coins,
       level: user.level,
+      experience: user.experience || 0,
+      totalSpent: user.totalSpent || 0,
     });
   } catch (error) {
     res.status(500).json({
@@ -44,14 +46,14 @@ router.post("/gift", authRequired, async (req, res) => {
     }
 
     user.coins -= amount;
+
+    user.totalSpent = (user.totalSpent || 0) + amount;
+
     const expGain = Math.floor(amount / 10);
 
-user.experience =
-  (user.experience || 0) + expGain;
+    user.experience = (user.experience || 0) + expGain;
 
-user.level =
-  Math.floor(user.experience / 100) + 1;
-  
+    user.level = Math.floor(user.experience / 100) + 1;
 
     user.transactions.unshift({
       type: "gift",
@@ -63,6 +65,9 @@ user.level =
     res.json({
       success: true,
       coins: user.coins,
+      level: user.level,
+      experience: user.experience,
+      totalSpent: user.totalSpent,
     });
   } catch (error) {
     res.status(500).json({

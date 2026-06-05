@@ -49,11 +49,21 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
-    experience: {
-  type: Number,
-  default: 0,
-},
 
+    experience: {
+      type: Number,
+      default: 0,
+    },
+
+    totalSpent: {
+      type: Number,
+      default: 0,
+    },
+
+    followersCount: {
+      type: Number,
+      default: 0,
+    },
 
     followers: [
       {

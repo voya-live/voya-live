@@ -64,6 +64,9 @@ router.post(
           currentUser._id
         );
 
+        targetUser.followersCount =
+          targetUser.followers.length;
+
         await currentUser.save();
         await targetUser.save();
       }
@@ -115,6 +118,9 @@ router.post(
             currentUser._id.toString()
         );
 
+      targetUser.followersCount =
+        targetUser.followers.length;
+
       await currentUser.save();
       await targetUser.save();
 
@@ -161,9 +167,13 @@ router.get(
         name: user.name,
         phone: user.phone,
         level: user.level,
+        vipLevel: user.vipLevel || 0,
         experience: user.experience || 0,
+        totalSpent: user.totalSpent || 0,
         coins: user.coins,
         followers: user.followers.length,
+        followersCount:
+          user.followersCount || user.followers.length,
         following: user.following.length,
         isFollowing,
       });

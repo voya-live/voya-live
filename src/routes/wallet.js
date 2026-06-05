@@ -44,6 +44,14 @@ router.post("/gift", authRequired, async (req, res) => {
     }
 
     user.coins -= amount;
+    const expGain = Math.floor(amount / 10);
+
+user.experience =
+  (user.experience || 0) + expGain;
+
+user.level =
+  Math.floor(user.experience / 100) + 1;
+  
 
     user.transactions.unshift({
       type: "gift",

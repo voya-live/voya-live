@@ -161,6 +161,7 @@ router.get(
         name: user.name,
         phone: user.phone,
         level: user.level,
+        experience: user.experience || 0,
         coins: user.coins,
         followers: user.followers.length,
         following: user.following.length,

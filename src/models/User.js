@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    vipLevel: {
+  type: Number,
+  default: 0,
+},
 
     experience: {
       type: Number,

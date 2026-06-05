@@ -14,6 +14,7 @@ import roomRoutes from "./routes/rooms.js";
 import walletRoutes from "./routes/wallet.js";
 import adminRoutes from "./routes/admin.js";
 import userRoutes from "./routes/users.js";
+import leaderboardRoutes from "./routes/leaderboard.js";
 
 dotenv.config();
 
@@ -105,6 +106,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 const liveRooms = {};
 const handRequests = {};

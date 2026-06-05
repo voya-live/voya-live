@@ -4,6 +4,16 @@ import { authRequired } from "../middleware/auth.js";
 
 const router = express.Router();
 
+function calculateVipLevel(totalSpent) {
+  if (totalSpent >= 5000) return 5;
+  if (totalSpent >= 2500) return 4;
+  if (totalSpent >= 1000) return 3;
+  if (totalSpent >= 500) return 2;
+  if (totalSpent >= 100) return 1;
+
+  return 0;
+}
+
 router.get("/balance", authRequired, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -19,6 +29,7 @@ router.get("/balance", authRequired, async (req, res) => {
       level: user.level,
       experience: user.experience || 0,
       totalSpent: user.totalSpent || 0,
+      vipLevel: user.vipLevel || 0,
     });
   } catch (error) {
     res.status(500).json({
@@ -55,6 +66,8 @@ router.post("/gift", authRequired, async (req, res) => {
 
     user.level = Math.floor(user.experience / 100) + 1;
 
+    user.vipLevel = calculateVipLevel(user.totalSpent);
+
     user.transactions.unshift({
       type: "gift",
       amount: -amount,
@@ -68,6 +81,7 @@ router.post("/gift", authRequired, async (req, res) => {
       level: user.level,
       experience: user.experience,
       totalSpent: user.totalSpent,
+      vipLevel: user.vipLevel,
     });
   } catch (error) {
     res.status(500).json({

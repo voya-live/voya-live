@@ -355,6 +355,22 @@ io.on("connection", (socket) => {
 
     emitRoomState(roomId);
   });
+  socket.on("room:hostMuteAll", ({ roomId, muted }) => {
+  if (!roomId) return;
+
+  if (!roomSpeakers[roomId]) return;
+
+  roomSpeakers[roomId] = roomSpeakers[roomId].map((speaker) => {
+    if (speaker.isHost) return speaker;
+
+    return {
+      ...speaker,
+      muted: Boolean(muted),
+    };
+  });
+
+  emitRoomState(roomId);
+});
 
   socket.on("room:clearHand", ({ roomId, userId }) => {
     if (!roomId || !userId) return;

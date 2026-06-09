@@ -359,6 +359,49 @@ io.on("connection", (socket) => {
 
     emitRoomState(roomId);
   });
+  socket.on("room:kickUser", ({ roomId, userId }) => {
+  if (!roomId || !userId) return;
+
+  const targetUser = liveRooms[roomId]?.users?.find(
+    (item) => item.id === userId
+  );
+
+  if (!targetUser) return;
+
+  if (targetUser.isHost) {
+    socket.emit("room:error", {
+      message: "Host cannot be kicked",
+    });
+
+    return;
+  }
+
+  io.to(targetUser.socketId).emit("room:kicked", {
+    message: "You have been removed from the room by the host",
+  });
+
+  liveRooms[roomId].users = liveRooms[roomId].users.filter(
+    (item) => item.id !== userId
+  );
+
+  if (roomSpeakers[roomId]) {
+    roomSpeakers[roomId] = roomSpeakers[roomId].filter(
+      (item) => item.id !== userId
+    );
+  }
+
+  if (handRequests[roomId]) {
+    handRequests[roomId] = handRequests[roomId].filter(
+      (item) => item.id !== userId
+    );
+  }
+
+  io.sockets.sockets.get(targetUser.socketId)?.leave(roomId);
+
+  io.emit("rooms:update", liveRooms);
+
+  emitRoomState(roomId);
+});
 
   socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
     if (!roomId || !userId) return;

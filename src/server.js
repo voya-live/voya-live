@@ -8,6 +8,7 @@ import agoraAccessToken from "agora-access-token";
 const { RtcTokenBuilder, RtcRole } = agoraAccessToken;
 
 import { connectDb } from "./config/db.js";
+import Room from "./models/Room.js";
 
 import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/rooms.js";

@@ -134,13 +134,25 @@ io.on("connection", (socket) => {
     try {
   const room = await Room.findById(roomId);
 
-  if (room?.locked && !user.isHost) {
+if (room?.locked && !user.isHost) {
+  socket.emit("room:error", {
+    message: "Room is locked by host",
+  });
+
+  return;
+}
+
+if (room?.password && !user.isHost) {
+  const providedPassword = String(user.roomPassword || "").trim();
+
+  if (providedPassword !== room.password) {
     socket.emit("room:error", {
-      message: "Room is locked by host",
+      message: "Incorrect room password",
     });
 
     return;
   }
+}
 } catch (error) {
   socket.emit("room:error", {
     message: "Failed to check room lock status",

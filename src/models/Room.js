@@ -27,10 +27,16 @@ const roomSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
     locked: {
-  type: Boolean,
-  default: false,
-},
+      type: Boolean,
+      default: false,
+    },
+
+    password: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

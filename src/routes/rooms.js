@@ -29,6 +29,7 @@ router.post("/", authRequired, async (req, res) => {
       tag: req.body.tag || "Live",
       isActive: true,
       locked: false,
+      password: "",
     });
 
     res.status(201).json({ room });
@@ -89,6 +90,68 @@ router.patch("/:roomId/unlock", authRequired, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: "Failed to unlock room",
+    });
+  }
+});
+
+router.patch("/:roomId/password", authRequired, async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (String(room.hostId) !== String(req.user.id)) {
+      return res.status(403).json({
+        error: "Only host can set room password",
+      });
+    }
+
+    const password = String(req.body.password || "").trim();
+
+    if (!password) {
+      return res.status(400).json({
+        error: "Password is required",
+      });
+    }
+
+    room.password = password;
+    await room.save();
+
+    res.json({ room });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to set room password",
+    });
+  }
+});
+
+router.delete("/:roomId/password", authRequired, async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (String(room.hostId) !== String(req.user.id)) {
+      return res.status(403).json({
+        error: "Only host can remove room password",
+      });
+    }
+
+    room.password = "";
+    await room.save();
+
+    res.json({ room });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to remove room password",
     });
   }
 });

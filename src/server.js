@@ -128,8 +128,25 @@ io.on("connection", (socket) => {
 
   socket.emit("rooms:update", liveRooms);
 
-  socket.on("room:join", ({ roomId, user, agoraUid }) => {
+  socket.on("room:join", async ({ roomId, user, agoraUid }) => {
     if (!roomId || !user) return;
+    try {
+  const room = await Room.findById(roomId);
+
+  if (room?.locked && !user.isHost) {
+    socket.emit("room:error", {
+      message: "Room is locked by host",
+    });
+
+    return;
+  }
+} catch (error) {
+  socket.emit("room:error", {
+    message: "Failed to check room lock status",
+  });
+
+  return;
+}
 
     if (!liveRooms[roomId]) {
       liveRooms[roomId] = {

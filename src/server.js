@@ -383,44 +383,6 @@ if (room?.password && !user.isHost) {
   });
   socket.on("room:kickUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
-  socket.on("room:banUser", ({ roomId, userId }) => {
-  if (!roomId || !userId) return;
-
-  if (!roomBans[roomId]) {
-    roomBans[roomId] = [];
-  }
-
-  if (!roomBans[roomId].includes(userId)) {
-    roomBans[roomId].push(userId);
-  }
-
-  const targetUser =
-    liveRooms[roomId]?.users?.find(
-      (item) => item.id === userId
-    );
-
-  if (targetUser?.socketId) {
-    io.to(targetUser.socketId).emit("room:kicked", {
-      message: "You have been banned from this room",
-    });
-  }
-
-  if (liveRooms[roomId]) {
-    liveRooms[roomId].users =
-      liveRooms[roomId].users.filter(
-        (item) => item.id !== userId
-      );
-  }
-
-  if (roomSpeakers[roomId]) {
-    roomSpeakers[roomId] =
-      roomSpeakers[roomId].filter(
-        (item) => item.id !== userId
-      );
-  }
-
-  emitRoomState(roomId);
-});
 
   const targetUser = liveRooms[roomId]?.users?.find(
     (item) => item.id === userId
@@ -457,6 +419,60 @@ if (room?.password && !user.isHost) {
   }
 
   io.sockets.sockets.get(targetUser.socketId)?.leave(roomId);
+
+  io.emit("rooms:update", liveRooms);
+
+  emitRoomState(roomId);
+});
+
+socket.on("room:banUser", ({ roomId, userId }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomBans[roomId]) {
+    roomBans[roomId] = [];
+  }
+
+  if (!roomBans[roomId].includes(userId)) {
+    roomBans[roomId].push(userId);
+  }
+
+  const targetUser = liveRooms[roomId]?.users?.find(
+    (item) => item.id === userId
+  );
+
+  if (targetUser?.isHost) {
+    socket.emit("room:error", {
+      message: "Host cannot be banned",
+    });
+
+    return;
+  }
+
+  if (targetUser?.socketId) {
+    io.to(targetUser.socketId).emit("room:kicked", {
+      message: "You have been banned from this room",
+    });
+
+    io.sockets.sockets.get(targetUser.socketId)?.leave(roomId);
+  }
+
+  if (liveRooms[roomId]) {
+    liveRooms[roomId].users = liveRooms[roomId].users.filter(
+      (item) => item.id !== userId
+    );
+  }
+
+  if (roomSpeakers[roomId]) {
+    roomSpeakers[roomId] = roomSpeakers[roomId].filter(
+      (item) => item.id !== userId
+    );
+  }
+
+  if (handRequests[roomId]) {
+    handRequests[roomId] = handRequests[roomId].filter(
+      (item) => item.id !== userId
+    );
+  }
 
   io.emit("rooms:update", liveRooms);
 

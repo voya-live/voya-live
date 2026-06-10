@@ -300,6 +300,20 @@ if (!roomAdmins[roomId]) {
       type: "system",
       text: `${user.name} joined the room`,
     });
+    io.to(roomId).emit(
+  "room:membersUpdate",
+  roomMembers[roomId] || []
+);
+
+io.to(roomId).emit(
+  "room:memberRequests",
+  memberRequests[roomId] || []
+);
+
+io.to(roomId).emit(
+  "room:adminsUpdate",
+  roomAdmins[roomId] || []
+);
 
     emitRoomState(roomId);
   });
@@ -600,6 +614,49 @@ socket.on("room:removeAdmin", ({ roomId, userId }) => {
     roomAdmins[roomId]
   );
 });
+socket.on("room:requestMembership", ({ roomId, user }) => {
+  if (!roomId || !user?.id) return;
+
+  if (!memberRequests[roomId]) {
+    memberRequests[roomId] = [];
+  }
+
+  if (!roomMembers[roomId]) {
+    roomMembers[roomId] = [];
+  }
+
+  const alreadyMember = roomMembers[roomId].find(
+    (item) => item.id === user.id
+  );
+
+  if (alreadyMember) {
+    socket.emit("room:error", {
+      message: "You are already a room member",
+    });
+
+    return;
+  }
+
+  const alreadyRequested = memberRequests[roomId].find(
+    (item) => item.id === user.id
+  );
+
+  if (!alreadyRequested) {
+    memberRequests[roomId].push({
+      id: user.id,
+      name: user.name,
+    });
+  }
+
+  io.to(roomId).emit(
+    "room:memberRequests",
+    memberRequests[roomId]
+  );
+
+  socket.emit("room:error", {
+    message: "Membership request sent",
+  });
+});
 socket.on("room:approveMember", ({ roomId, userId, name }) => {
   if (!roomId || !userId) return;
 
@@ -617,6 +674,16 @@ socket.on("room:approveMember", ({ roomId, userId, name }) => {
       name,
     });
   }
+  if (memberRequests[roomId]) {
+  memberRequests[roomId] = memberRequests[roomId].filter(
+    (item) => item.id !== userId
+  );
+}
+
+io.to(roomId).emit(
+  "room:memberRequests",
+  memberRequests[roomId] || []
+);
 
   io.to(roomId).emit(
     "room:membersUpdate",

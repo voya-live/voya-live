@@ -132,10 +132,11 @@ io.on("connection", (socket) => {
 
   socket.on("room:join", async ({ roomId, user, agoraUid }) => {
     if (!roomId || !user) return;
-    if (
-  roomBans[roomId] &&
-  roomBans[roomId].includes(user.id)
-) {
+    const bannedUser = roomBans[roomId]?.find(
+  (item) => item.id === user.id
+);
+
+if (bannedUser) {
   socket.emit("room:error", {
     message: "You are banned from this room",
   });
@@ -429,16 +430,23 @@ socket.on("room:banUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
 
   if (!roomBans[roomId]) {
-    roomBans[roomId] = [];
-  }
+  roomBans[roomId] = [];
+}
 
-  if (!roomBans[roomId].includes(userId)) {
-    roomBans[roomId].push(userId);
-  }
+const targetUser = liveRooms[roomId]?.users?.find(
+  (item) => item.id === userId
+);
 
-  const targetUser = liveRooms[roomId]?.users?.find(
-    (item) => item.id === userId
-  );
+const alreadyBanned = roomBans[roomId].find(
+  (item) => item.id === userId
+);
+
+if (!alreadyBanned && targetUser) {
+  roomBans[roomId].push({
+    id: userId,
+    name: targetUser.name,
+  });
+}
 
   if (targetUser?.isHost) {
     socket.emit("room:error", {
@@ -476,9 +484,27 @@ socket.on("room:banUser", ({ roomId, userId }) => {
 
   io.emit("rooms:update", liveRooms);
 
-  emitRoomState(roomId);
-});
+io.to(roomId).emit(
+  "room:bannedUsers",
+  roomBans[roomId] || []
+);
 
+emitRoomState(roomId);R
+});
+socket.on("room:unbanUser", ({ roomId, userId }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomBans[roomId]) return;
+
+  roomBans[roomId] = roomBans[roomId].filter(
+    (item) => item.id !== userId
+  );
+
+  io.to(roomId).emit(
+    "room:bannedUsers",
+    roomBans[roomId] || []
+  );
+});
   socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
     if (!roomId || !userId) return;
 

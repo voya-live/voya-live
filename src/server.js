@@ -113,6 +113,51 @@ const liveRooms = {};
 const handRequests = {};
 const roomSpeakers = {};
 const roomBans = {};
+const roomMembers = {};
+const memberRequests = {};
+const roomAdmins = {};
+function isRoomHost(roomId, userId) {
+  const user = liveRooms[roomId]?.users?.find(
+    (item) => item.id === userId
+  );
+
+  return Boolean(user?.isHost);
+}
+
+function isRoomAdmin(roomId, userId) {
+  return Boolean(
+    roomAdmins[roomId]?.find(
+      (item) => item.id === userId
+    )
+  );
+}
+
+function canManageRoom(roomId, userId) {
+  return (
+    isRoomHost(roomId, userId) ||
+    isRoomAdmin(roomId, userId)
+  );
+}
+
+function canControlTarget(roomId, actorId, targetId) {
+  if (isRoomHost(roomId, actorId)) {
+    return true;
+  }
+
+  if (isRoomAdmin(roomId, actorId)) {
+    if (isRoomHost(roomId, targetId)) {
+      return false;
+    }
+
+    if (isRoomAdmin(roomId, targetId)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return false;
+}
 
 function emitRoomState(roomId) {
   io.to(roomId).emit("room:handRequests", handRequests[roomId] || []);
@@ -185,6 +230,17 @@ if (room?.password && !user.isHost) {
     if (!roomSpeakers[roomId]) {
       roomSpeakers[roomId] = [];
     }
+    if (!roomMembers[roomId]) {
+  roomMembers[roomId] = [];
+}
+
+if (!memberRequests[roomId]) {
+  memberRequests[roomId] = [];
+}
+
+if (!roomAdmins[roomId]) {
+  roomAdmins[roomId] = [];
+}
 
     const alreadyJoined = liveRooms[roomId].users.find(
       (item) => item.id === user.id
@@ -505,6 +561,67 @@ socket.on("room:unbanUser", ({ roomId, userId }) => {
     roomBans[roomId] || []
   );
   emitRoomState(roomId);
+});
+socket.on("room:addAdmin", ({ roomId, userId, name }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomAdmins[roomId]) {
+    roomAdmins[roomId] = [];
+  }
+
+  const exists = roomAdmins[roomId].find(
+    (item) => item.id === userId
+  );
+
+  if (!exists) {
+    roomAdmins[roomId].push({
+      id: userId,
+      name,
+    });
+  }
+
+  io.to(roomId).emit(
+    "room:adminsUpdate",
+    roomAdmins[roomId]
+  );
+});
+
+socket.on("room:removeAdmin", ({ roomId, userId }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomAdmins[roomId]) return;
+
+  roomAdmins[roomId] = roomAdmins[roomId].filter(
+    (item) => item.id !== userId
+  );
+
+  io.to(roomId).emit(
+    "room:adminsUpdate",
+    roomAdmins[roomId]
+  );
+});
+socket.on("room:approveMember", ({ roomId, userId, name }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomMembers[roomId]) {
+    roomMembers[roomId] = [];
+  }
+
+  const exists = roomMembers[roomId].find(
+    (item) => item.id === userId
+  );
+
+  if (!exists) {
+    roomMembers[roomId].push({
+      id: userId,
+      name,
+    });
+  }
+
+  io.to(roomId).emit(
+    "room:membersUpdate",
+    roomMembers[roomId]
+  );
 });
   socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
     if (!roomId || !userId) return;

@@ -489,7 +489,7 @@ io.to(roomId).emit(
   roomBans[roomId] || []
 );
 
-emitRoomState(roomId);R
+emitRoomState(roomId);
 });
 socket.on("room:unbanUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
@@ -504,6 +504,7 @@ socket.on("room:unbanUser", ({ roomId, userId }) => {
     "room:bannedUsers",
     roomBans[roomId] || []
   );
+  emitRoomState(roomId);
 });
   socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
     if (!roomId || !userId) return;

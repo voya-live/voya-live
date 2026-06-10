@@ -112,6 +112,7 @@ app.use("/api/leaderboard", leaderboardRoutes);
 const liveRooms = {};
 const handRequests = {};
 const roomSpeakers = {};
+const roomBans = {};
 
 function emitRoomState(roomId) {
   io.to(roomId).emit("room:handRequests", handRequests[roomId] || []);
@@ -131,6 +132,15 @@ io.on("connection", (socket) => {
 
   socket.on("room:join", async ({ roomId, user, agoraUid }) => {
     if (!roomId || !user) return;
+    if (
+  roomBans[roomId] &&
+  roomBans[roomId].includes(user.id)
+) {
+  socket.emit("room:error", {
+    message: "You are banned from this room",
+  });
+  return;
+}
     try {
   const room = await Room.findById(roomId);
 
@@ -373,6 +383,44 @@ if (room?.password && !user.isHost) {
   });
   socket.on("room:kickUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
+  socket.on("room:banUser", ({ roomId, userId }) => {
+  if (!roomId || !userId) return;
+
+  if (!roomBans[roomId]) {
+    roomBans[roomId] = [];
+  }
+
+  if (!roomBans[roomId].includes(userId)) {
+    roomBans[roomId].push(userId);
+  }
+
+  const targetUser =
+    liveRooms[roomId]?.users?.find(
+      (item) => item.id === userId
+    );
+
+  if (targetUser?.socketId) {
+    io.to(targetUser.socketId).emit("room:kicked", {
+      message: "You have been banned from this room",
+    });
+  }
+
+  if (liveRooms[roomId]) {
+    liveRooms[roomId].users =
+      liveRooms[roomId].users.filter(
+        (item) => item.id !== userId
+      );
+  }
+
+  if (roomSpeakers[roomId]) {
+    roomSpeakers[roomId] =
+      roomSpeakers[roomId].filter(
+        (item) => item.id !== userId
+      );
+  }
+
+  emitRoomState(roomId);
+});
 
   const targetUser = liveRooms[roomId]?.users?.find(
     (item) => item.id === userId

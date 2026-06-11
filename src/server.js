@@ -730,6 +730,17 @@ socket.on("room:requestMembership", ({ roomId, user }) => {
 });
 socket.on("room:approveMember", ({ roomId, userId, name }) => {
   if (!roomId || !userId) return;
+  const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canManageRoom(roomId, actor.id)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to approve members",
+  });
+
+  return;
+}
 
   if (!roomMembers[roomId]) {
     roomMembers[roomId] = [];

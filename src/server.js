@@ -291,6 +291,33 @@ if (!roomAdmins[roomId]) {
         hostAlreadySpeaker.vipLevel = user.vipLevel || 0;
       }
     }
+    const isMember = roomMembers[roomId]?.find(
+  (item) => item.id === user.id
+);
+
+if (isMember && !user.isHost) {
+  const alreadySpeaker = roomSpeakers[roomId].find(
+    (item) => item.id === user.id
+  );
+
+  if (!alreadySpeaker) {
+    roomSpeakers[roomId].push({
+      id: user.id,
+      name: user.name,
+      agoraUid: Number(agoraUid),
+      isHost: false,
+      muted: false,
+      level: user.level || 1,
+      experience: user.experience || 0,
+      vipLevel: user.vipLevel || 0,
+    });
+  } else {
+    alreadySpeaker.agoraUid = Number(agoraUid);
+    alreadySpeaker.level = user.level || 1;
+    alreadySpeaker.experience = user.experience || 0;
+    alreadySpeaker.vipLevel = user.vipLevel || 0;
+  }
+}
 
     socket.join(roomId);
 

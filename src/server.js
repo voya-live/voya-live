@@ -423,6 +423,17 @@ io.to(roomId).emit(
 
   socket.on("room:approveSpeaker", ({ roomId, userId }) => {
     if (!roomId || !userId) return;
+    const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canManageRoom(roomId, actor.id)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to manage this room",
+  });
+
+  return;
+}
 
     if (!roomSpeakers[roomId]) {
       roomSpeakers[roomId] = [];
@@ -470,6 +481,17 @@ io.to(roomId).emit(
 
   socket.on("room:removeSpeaker", ({ roomId, userId }) => {
     if (!roomId || !userId) return;
+    const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canManageRoom(roomId, actor.id)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to manage this room",
+  });
+
+  return;
+}
 
     if (roomSpeakers[roomId]) {
       roomSpeakers[roomId] = roomSpeakers[roomId].filter(
@@ -481,6 +503,17 @@ io.to(roomId).emit(
   });
   socket.on("room:kickUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
+  const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canControlTarget(roomId, actor.id, userId)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to control this user",
+  });
+
+  return;
+}
 
   const targetUser = liveRooms[roomId]?.users?.find(
     (item) => item.id === userId
@@ -525,6 +558,17 @@ io.to(roomId).emit(
 
 socket.on("room:banUser", ({ roomId, userId }) => {
   if (!roomId || !userId) return;
+  const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canControlTarget(roomId, actor.id, userId)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to control this user",
+  });
+
+  return;
+}
 
   if (!roomBans[roomId]) {
   roomBans[roomId] = [];
@@ -719,6 +763,17 @@ io.to(roomId).emit(
 });
   socket.on("room:hostMuteUser", ({ roomId, userId, muted }) => {
     if (!roomId || !userId) return;
+    const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !canControlTarget(roomId, actor.id, userId)) {
+  socket.emit("room:error", {
+    message: "You are not allowed to control this user",
+  });
+
+  return;
+}
 
     const speaker = roomSpeakers[roomId]?.find(
       (item) => item.id === userId
@@ -732,6 +787,17 @@ io.to(roomId).emit(
   });
   socket.on("room:hostMuteAll", ({ roomId, muted }) => {
   if (!roomId) return;
+  const actor = liveRooms[roomId]?.users?.find(
+  (item) => item.socketId === socket.id
+);
+
+if (!actor || !isRoomHost(roomId, actor.id)) {
+  socket.emit("room:error", {
+    message: "Only host can mute all",
+  });
+
+  return;
+}
 
   if (!roomSpeakers[roomId]) return;
 

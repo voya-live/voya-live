@@ -116,6 +116,7 @@ const roomBans = {};
 const roomMembers = {};
 const memberRequests = {};
 const roomAdmins = {};
+const roomDescriptions = {};
 function isRoomHost(roomId, userId) {
   const user = liveRooms[roomId]?.users?.find(
     (item) => item.id === userId
@@ -240,6 +241,9 @@ if (!memberRequests[roomId]) {
 
 if (!roomAdmins[roomId]) {
   roomAdmins[roomId] = [];
+}
+if (!roomDescriptions[roomId]) {
+  roomDescriptions[roomId] = "";
 }
 
     const alreadyJoined = liveRooms[roomId].users.find(
@@ -835,6 +839,33 @@ if (!actor || !isRoomHost(roomId, actor.id)) {
 
     emitRoomState(roomId);
   });
+  socket.on("room:setDescription", ({ roomId, description }) => {
+  if (!roomId) return;
+
+  const actor = liveRooms[roomId]?.users?.find(
+    (item) => item.socketId === socket.id
+  );
+  console.log("SET DESCRIPTION CHECK", {
+  roomId,
+  description,
+  actor,
+});
+
+  if (!actor || !isRoomHost(roomId, actor.id)) {
+    socket.emit("room:error", {
+      message: "Only host can update room description",
+    });
+
+    return;
+  }
+
+  roomDescriptions[roomId] = String(description || "").trim();
+  console.log("DESCRIPTION SAVED", roomDescriptions[roomId]);
+
+  io.to(roomId).emit("room:descriptionUpdate", {
+    description: roomDescriptions[roomId],
+  });
+});
 
   socket.on("disconnect", () => {
     Object.keys(liveRooms).forEach((roomId) => {

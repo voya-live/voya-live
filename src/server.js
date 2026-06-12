@@ -253,6 +253,7 @@ if (!roomDescriptions[roomId]) {
     const userData = {
       id: user.id,
       name: user.name,
+      profileImage: user.profileImage || "",
       socketId: socket.id,
       agoraUid: Number(agoraUid),
       isHost: user.isHost || false,
@@ -267,6 +268,7 @@ if (!roomDescriptions[roomId]) {
       alreadyJoined.socketId = socket.id;
       alreadyJoined.agoraUid = Number(agoraUid);
       alreadyJoined.isHost = user.isHost || false;
+      alreadyJoined.profileImage = user.profileImage || "";
       alreadyJoined.level = user.level || 1;
       alreadyJoined.experience = user.experience || 0;
       alreadyJoined.vipLevel = user.vipLevel || 0;

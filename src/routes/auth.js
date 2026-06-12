@@ -65,6 +65,7 @@ router.post("/register", async (req, res) => {
       role: user.role,
       coins: user.coins,
       level: user.level,
+      profileImage: user.profileImage || "",
     },
   });
 });

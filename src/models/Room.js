@@ -41,6 +41,10 @@ const roomSchema = new mongoose.Schema(
   type: String,
   default: "",
 },
+coverImage: {
+  type: String,
+  default: "",
+},
   },
   {
     timestamps: true,

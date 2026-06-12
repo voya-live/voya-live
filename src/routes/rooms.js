@@ -31,6 +31,7 @@ router.post("/", authRequired, async (req, res) => {
       locked: false,
       password: "",
       description: "",
+      coverImage: "",
     });
 
     res.status(201).json({ room });
@@ -153,6 +154,33 @@ router.delete("/:roomId/password", authRequired, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: "Failed to remove room password",
+    });
+  }
+});
+router.patch("/:roomId/cover", authRequired, async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (String(room.hostId) !== String(req.user.id)) {
+      return res.status(403).json({
+        error: "Only host can update room cover",
+      });
+    }
+
+    room.coverImage = String(req.body.coverImage || "").trim();
+
+    await room.save();
+
+    res.json({ room });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to update room cover",
     });
   }
 });

@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
+    profileImage: {
+  type: String,
+  default: "",
+},
 
     coins: {
       type: Number,

@@ -138,6 +138,41 @@ router.post(
 );
 
 /*
+UPDATE PROFILE IMAGE
+*/
+
+router.patch(
+  "/profile-image",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const profileImage = String(
+        req.body.profileImage || ""
+      ).trim();
+
+      req.user.profileImage = profileImage;
+
+      await req.user.save();
+
+      res.json({
+        success: true,
+        user: {
+          id: req.user._id,
+          name: req.user.name,
+          phone: req.user.phone,
+          profileImage: req.user.profileImage,
+        },
+      });
+    } catch (error) {
+      console.error("Profile image update failed:", error);
+
+      res.status(500).json({
+        error: "Profile image update failed",
+      });
+    }
+  }
+);
+/*
 PROFILE
 */
 
@@ -166,6 +201,7 @@ router.get(
         id: user._id,
         name: user.name,
         phone: user.phone,
+        profileImage: user.profileImage || "",
         level: user.level,
         vipLevel: user.vipLevel || 0,
         experience: user.experience || 0,

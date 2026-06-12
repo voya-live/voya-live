@@ -30,6 +30,7 @@ router.post("/", authRequired, async (req, res) => {
       isActive: true,
       locked: false,
       password: "",
+      description: "",
     });
 
     res.status(201).json({ room });

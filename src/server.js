@@ -839,7 +839,7 @@ if (!actor || !isRoomHost(roomId, actor.id)) {
 
     emitRoomState(roomId);
   });
-  socket.on("room:setDescription", ({ roomId, description }) => {
+  socket.on("room:setDescription", async ({ roomId, description }) => {
   if (!roomId) return;
 
   const actor = liveRooms[roomId]?.users?.find(
@@ -860,6 +860,10 @@ if (!actor || !isRoomHost(roomId, actor.id)) {
   }
 
   roomDescriptions[roomId] = String(description || "").trim();
+
+await Room.findByIdAndUpdate(roomId, {
+  description: roomDescriptions[roomId],
+});
   console.log("DESCRIPTION SAVED", roomDescriptions[roomId]);
 
   io.to(roomId).emit("room:descriptionUpdate", {

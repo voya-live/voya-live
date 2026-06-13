@@ -213,4 +213,33 @@ router.patch("/:roomId/category", authRequired, async (req, res) => {
     });
   }
 });
+router.delete("/:roomId", authRequired, async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (String(room.hostId) !== String(req.user.id)) {
+      return res.status(403).json({
+        error: "Only host can delete this room",
+      });
+    }
+
+    room.isActive = false;
+    await room.save();
+
+    res.json({
+      success: true,
+      roomId: req.params.roomId,
+    });
+  } catch {
+    res.status(500).json({
+      error: "Failed to delete room",
+    });
+  }
+});
 export default router;

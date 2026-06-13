@@ -22,6 +22,16 @@ router.get("/", async (_, res) => {
 
 router.post("/", authRequired, async (req, res) => {
   try {
+    const existingRoom = await Room.findOne({
+  hostId: req.user.id,
+  isActive: true,
+});
+
+if (existingRoom) {
+  return res.status(400).json({
+    error: "You already have an active room. Delete it before creating a new one.",
+  });
+}
     const room = await Room.create({
       name: req.body.name || "New Room",
       host: req.user.name,

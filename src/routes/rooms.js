@@ -186,4 +186,31 @@ router.patch("/:roomId/cover", authRequired, async (req, res) => {
   }
 });
 
+router.patch("/:roomId/category", authRequired, async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (String(room.hostId) !== String(req.user.id)) {
+      return res.status(403).json({
+        error: "Only host can update room category",
+      });
+    }
+
+    room.category = req.body.category || "Chat";
+
+    await room.save();
+
+    res.json({ room });
+  } catch {
+    res.status(500).json({
+      error: "Failed to update room category",
+    });
+  }
+});
 export default router;

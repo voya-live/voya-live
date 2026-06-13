@@ -27,6 +27,7 @@ router.post("/", authRequired, async (req, res) => {
       host: req.user.name,
       hostId: req.user.id,
       tag: req.body.tag || "Live",
+      category: req.body.category || "Chat",
       isActive: true,
       locked: false,
       password: "",

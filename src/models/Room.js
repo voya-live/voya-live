@@ -22,6 +22,10 @@ const roomSchema = new mongoose.Schema(
       type: String,
       default: "Live",
     },
+    category: {
+  type: String,
+  default: "Chat",
+},
 
     isActive: {
       type: Boolean,
